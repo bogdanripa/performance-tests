@@ -50,6 +50,8 @@ export class BackendService {
     const promises = [];
     promises.push(this.test('AWS'));
     promises.push(this.test('GENEZIO'));
+    promises.push(this.test('GENEZIO_PY'));
+    promises.push(this.test('AWS_PY'));
 
     const times = await Promise.all(promises);
     const timesMap:any = {};
@@ -67,7 +69,7 @@ export class BackendService {
           insertDataOption: 'INSERT_ROWS',
           requestBody: {
               values: [
-                  [this.toExcelDate(Date.now()), timesMap.AWS, timesMap.GENEZIO]
+                  [this.toExcelDate(Date.now()), timesMap.AWS, timesMap.GENEZIO, timesMap.AWS_PY, timesMap.GENEZIO_PY]
               ]
           }
       });
