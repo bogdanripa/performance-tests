@@ -17,27 +17,6 @@ const sheets = google.sheets({ version: 'v4', auth });
 @GenezioDeploy()
 export class BackendService {
 
-  private async test(service: string): Promise<{service: string, time: number}> {
-    const url = process.env[`${service}_URL`];
-    if (!url) throw new Error(`${service} URL is not defined`);
-    const responseItime = await fetch(url)
-    .then((res) => res.text())
-
-    return {service, time: parseInt(responseItime)};
-  }
-
-  private toExcelDate(jsDate: number) {
-    const excelEpoch = (new Date(1899, 11, 31)); // December 31, 1899
-    const dayMilliseconds = 24 * 60 * 60 * 1000; // Total milliseconds in a day
-  
-    // Calculate difference in milliseconds and convert it to days
-    const excelDate = (jsDate - excelEpoch.getTime()) / dayMilliseconds;
-  
-    // Add two days for the Excel leap year bug (Excel thinks 1900 was a leap year)
-    return excelDate + 2;
-  }
-  
-
   @GenezioMethod({ type: "cron", cronString: "*/20 * * * *" })
   async run(): Promise<void> {
     await this.testAllServices('Cold');
@@ -45,13 +24,14 @@ export class BackendService {
     await this.testAllServices('Warm');
     await this.testAllServices('Warm');
   }
-
+  
   private async testAllServices(range:string): Promise<void> {
     const promises = [];
     promises.push(this.test('AWS'));
-    promises.push(this.test('GENEZIO'));
-    promises.push(this.test('GENEZIO_PY'));
     promises.push(this.test('AWS_PY'));
+    promises.push(this.test('GENEZIO', 'DNS_JS'));
+    promises.push(this.test('GENEZIO', 'IP_JS'));
+    promises.push(this.test('GENEZIO', 'DNS_PY'));
 
     const times = await Promise.all(promises);
     const timesMap:any = {};
@@ -69,7 +49,7 @@ export class BackendService {
           insertDataOption: 'INSERT_ROWS',
           requestBody: {
               values: [
-                  [this.toExcelDate(Date.now()), timesMap.AWS, timesMap.GENEZIO, timesMap.AWS_PY, timesMap.GENEZIO_PY]
+                  [this.toExcelDate(Date.now()), timesMap.AWS, timesMap.GENEZIO_DNS_JS, timesMap.GENEZIO_IP_JS, timesMap.AWS_PY, timesMap.GENEZIO_DNS_PY]
               ]
           }
       });
@@ -78,5 +58,28 @@ export class BackendService {
     } catch (err) {
       console.error("Failed to append data", err);
     }
+  }
+
+  private async test(service: string, type:string|undefined=undefined): Promise<{service: string, time: number}> {
+    let url = process.env[`${service}_URL`];
+    if (!url) throw new Error(`${service} URL is not defined`);
+    if (type)
+      url += `?type=${type}`;
+    const responseItime = await fetch(url)
+    .then((res) => res.text())
+
+    if (type) service = `${service}_${type}`;
+    return {service, time: parseInt(responseItime)};
+  }
+
+  private toExcelDate(jsDate: number) {
+    const excelEpoch = (new Date(1899, 11, 31)); // December 31, 1899
+    const dayMilliseconds = 24 * 60 * 60 * 1000; // Total milliseconds in a day
+  
+    // Calculate difference in milliseconds and convert it to days
+    const excelDate = (jsDate - excelEpoch.getTime()) / dayMilliseconds;
+  
+    // Add two days for the Excel leap year bug (Excel thinks 1900 was a leap year)
+    return excelDate + 2;
   }
 }
