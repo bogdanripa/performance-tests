@@ -17,24 +17,23 @@ const sheets = google.sheets({ version: 'v4', auth });
 @GenezioDeploy()
 export class BackendService {
 
-  @GenezioMethod({ type: "cron", cronString: "*/20 * * * *" })
+  @GenezioMethod({ type: "cron", cronString: "13,33,53 * * * *" })
   async run(): Promise<void> {
     await this.testAllServices('Cold');
-    await this.testAllServices('Warm');
     await this.testAllServices('Warm');
     await this.testAllServices('Warm');
   }
   
   private async testAllServices(range:string): Promise<void> {
     const promises = [];
-    promises.push(this.test('AWS'));
-    promises.push(this.test('AWS_PY'));
-    promises.push(this.test('GENEZIO', 'DNS_JS'));
-    promises.push(this.test('GENEZIO', 'IP_JS'));
-    promises.push(this.test('GENEZIO', 'DNS_PY'));
+    const timesMap:any = {};
+
+    promises.push(this.test('AWS', 'JS'));
+    promises.push(this.test('AWS', 'PY'));
+    promises.push(this.test('GENEZIO', 'JS'));
+    promises.push(this.test('GENEZIO', 'PY'));
 
     const times = await Promise.all(promises);
-    const timesMap:any = {};
     times.forEach((time) => {
       timesMap[time.service] = time.time;
     });
@@ -49,7 +48,7 @@ export class BackendService {
           insertDataOption: 'INSERT_ROWS',
           requestBody: {
               values: [
-                  [this.toExcelDate(Date.now()), timesMap.AWS, timesMap.GENEZIO_DNS_JS, timesMap.GENEZIO_IP_JS, timesMap.AWS_PY, timesMap.GENEZIO_DNS_PY]
+                  [this.toExcelDate(Date.now()), timesMap.AWS_JS, timesMap.GENEZIO_JS, timesMap.AWS_PY, timesMap.GENEZIO_PY]
               ]
           }
       });
@@ -60,15 +59,16 @@ export class BackendService {
     }
   }
 
-  private async test(service: string, type:string|undefined=undefined): Promise<{service: string, time: number}> {
+  private async test(service: string, lang:string|undefined=undefined): Promise<{service: string, time: number}> {
     let url = process.env[`${service}_URL`];
     if (!url) throw new Error(`${service} URL is not defined`);
-    if (type)
-      url += `?type=${type}`;
+    if (lang)
+      url += `?lang=${lang}`;
+
     const responseItime = await fetch(url)
     .then((res) => res.text())
 
-    if (type) service = `${service}_${type}`;
+    if (lang) service = `${service}_${lang}`;
     return {service, time: parseInt(responseItime)};
   }
 
@@ -82,4 +82,12 @@ export class BackendService {
     // Add two days for the Excel leap year bug (Excel thinks 1900 was a leap year)
     return excelDate + 2;
   }
+
+  private isEvenRun() {
+    const now = new Date();
+    const minutesSinceMidnight = now.getHours() * 60 + now.getMinutes();
+    const runNumber = Math.floor(minutesSinceMidnight / 20);
+    return runNumber % 2 === 0;
+  }
+  
 }
