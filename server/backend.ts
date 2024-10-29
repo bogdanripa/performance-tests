@@ -17,9 +17,10 @@ const sheets = google.sheets({ version: 'v4', auth });
 @GenezioDeploy()
 export class BackendService {
 
-  @GenezioMethod({ type: "cron", cronString: "13,33,53 * * * *" })
+  @GenezioMethod({ type: "cron", cronString: "13 * * * *" })
   async run(): Promise<void> {
     await this.testAllServices('Cold');
+    await this.testAllServices('Warm');
     await this.testAllServices('Warm');
     await this.testAllServices('Warm');
   }
@@ -32,6 +33,7 @@ export class BackendService {
     promises.push(this.test('AWS', 'PY'));
     promises.push(this.test('GENEZIO', 'JS'));
     promises.push(this.test('GENEZIO', 'PY'));
+    promises.push(this.test('AZURE', 'JS'));
 
     const times = await Promise.all(promises);
     times.forEach((time) => {
@@ -48,7 +50,7 @@ export class BackendService {
           insertDataOption: 'INSERT_ROWS',
           requestBody: {
               values: [
-                  [this.toExcelDate(Date.now()), timesMap.AWS_JS, timesMap.GENEZIO_JS, timesMap.AWS_PY, timesMap.GENEZIO_PY]
+                  [this.toExcelDate(Date.now()), timesMap.AWS_JS, timesMap.GENEZIO_JS, timesMap.AWS_PY, timesMap.GENEZIO_PY, timesMap.AZURE_JS]
               ]
           }
       });
@@ -82,12 +84,4 @@ export class BackendService {
     // Add two days for the Excel leap year bug (Excel thinks 1900 was a leap year)
     return excelDate + 2;
   }
-
-  private isEvenRun() {
-    const now = new Date();
-    const minutesSinceMidnight = now.getHours() * 60 + now.getMinutes();
-    const runNumber = Math.floor(minutesSinceMidnight / 20);
-    return runNumber % 2 === 0;
-  }
-  
 }
