@@ -1,67 +1,26 @@
-<div align="center"> <a href="https://genezio.com/">
-  <picture>
-    <source media="(prefers-color-scheme: dark)" srcset="https://github.com/genez-io/graphics/raw/HEAD/svg/Icon_Genezio_White.svg">
-    <source media="(prefers-color-scheme: light)" srcset="https://github.com/genez-io/graphics/raw/HEAD/svg/Icon_Genezio_Black.svg">
-    <img alt="genezio logo" src="https://github.com/genez-io/graphics/raw/HEAD/svg/Icon_Genezio_Black.svg" height="100" >
-  </picture>
- </div>
+##FaaS Performance tests
 
-<div align="center">
+This repo is the source for the performnce tests for FaaS systems running on Genezio, AWS, Azure, vercel and Netlify.
 
-[![Join our community](https://img.shields.io/discord/1024296197575422022?style=social&label=Join%20our%20community%20&logo=discord&labelColor=6A7EC2)](https://discord.gg/uc9H5YKjXv)
-[![Follow @geneziodev](https://img.shields.io/twitter/url/https/twitter.com/geneziodev.svg?style=social&label=Follow%20%40geneziodev)](https://twitter.com/geneziodev)
+How it works:
 
-</div>
+In the server/backend.ts file we have a function (run) that is called every hour at :13. The run function calls the measuring function (aka parent) on each enironment - once for cold starts and then 3 more times to measure warm starts.
 
-# Genezio TypeSafe Getting Started
+Each measuring function runs in the same infrastructure / datacente as the measured function (aka child).
 
-In the server/ folder, you'll find the backend services that are exposed to the client-side via the project's SDK.
-You can update the backend.ts file to add or modify functions, or create new backend services (new files in the server/ folder).
+The clild function is the one we measure. We measure its executin time from the parent function.
 
-In the client/ folder, you have a basic React.js app that calls the hello world function from the backend. Check the src/App.tsx file to see how the Genezio project SDK is imported and how the backend function is called.
+You can find an example of a parent function in the server/coldStartTest.mjs file. You will see that it has the most basic response.
 
-Starting from this example, you can add backend functions that access a database for specific content, call other APIs to retrieve data, and then expose all of these in the front end via the same SDK.
+You can find an example of a child function in the server/coldStartTestChild.mjs file. This function measures the execution time of the child function, and returns the number of milliseconds it took the child function to execute.
 
-# Deploy
-:rocket: You can deploy your own version of the template to Genezio with one click:
+Lastly, in the server/backend.ts file we add the test results to a google sheet.
 
-[![Deploy to Genezio](https://raw.githubusercontent.com/Genez-io/graphics/main/svg/deploy-button.svg)](https://app.genez.io/start/deploy?repository=https://github.com/Genez-io/genezio-typesafe-getting-started)
+We run multiple type tests. From the most basic hello world tests written in NodeJS or Python (columnd B-F in the google sheet) to a more complex NextJS application (a non-cached blog frontend) - columns G-I.
 
+You can find the test results here:
+https://docs.google.com/spreadsheets/d/1jnAeCcZ4OS-qygXAWexjrJJ9RO9Eo8zJs1fPxTRSZvI/edit?gid=0#gid=0
 
-## Genezio CLI Commands
+The "Cold" sheet represent cold start times, while the Warm sheet represent the warm times.
 
-Genezio also provides a CLI tool that you can use to deploy your project from your machine.
-All commands are run from the root of the project, from a terminal:
-
-| Command                   | Action                                           |
-| :------------------------ | :----------------------------------------------- |
-| `npm install -g genezio`  | Installs genezio globally                        |
-| `genezio login`           | Logs in to genezio                               |
-| `genezio local`           | Starts a local server                            |
-| `genezio deploy`          | Deploys a production project                     |
-| `genezio --help`          | Get help using genezio                           |
-
-## Learn more
-
-To learn more about Genezio, take a look at the following resources:
-
-- [Official genezio documentation](https://genezio.com/docs)
-- [Tutorials](https://genezio.com/blog)
-
-## Contact
-
-If you need support or you have any questions, please join us in our [Discord channel](https://discord.gg/uc9H5YKjXv). We'd love to chat!
-
-## Built With
-
-- [Genezio](https://genezio.com/)
-- [Node.JS](https://nodejs.org/en/)
-- [React](https://reactjs.org/)
-- [Vite](https://vitejs.dev/)
-
-***
-
-<div align="center"> <a href="https://genezio.com/">
-  <p>Built with Genezio with ❤️ </p>
-  <img alt="genezio logo" src="https://raw.githubusercontent.com/Genez-io/graphics/main/svg/powered_by_genezio.svg" height="40">
-</div>
+If you want to run this test, you will have to deploy the needed functions on each platform, and add the corresponding URLs as env variables in this repo.
