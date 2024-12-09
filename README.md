@@ -1,4 +1,4 @@
-##FaaS Performance tests
+## FaaS Performance tests
 
 This repo is the source for the performnce tests for FaaS systems running on Genezio, AWS, Azure, vercel and Netlify.
 
