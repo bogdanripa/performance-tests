@@ -31,14 +31,15 @@ export class BackendService {
 
     promises.push(this.test('AWS', 'JS'));
     promises.push(this.test('AWS', 'PY'));
-    promises.push(this.test('AWS', 'NETLIFY'));
+    // promises.push(this.test('AWS', 'NETLIFY'));
     promises.push(this.test('GENEZIO', 'JS'));
     promises.push(this.test('GENEZIO', 'NEXTJS'));
     promises.push(this.test('GENEZIO', 'PY'));
     promises.push(this.test('AZURE', 'JS'));
-    promises.push(this.test('VERCEL'));
-    promises.push(this.test('NETLIFY'));
-    promises.push(this.test('GENEZIO', 'NETLIFY'));
+    promises.push(this.test('AZURE', 'PY'));
+    // promises.push(this.test('VERCEL'));
+    // promises.push(this.test('NETLIFY'));
+    //promises.push(this.test('GENEZIO', 'NETLIFY'));
 
     const times = await Promise.all(promises);
     times.forEach((time) => {
@@ -55,7 +56,16 @@ export class BackendService {
           insertDataOption: 'INSERT_ROWS',
           requestBody: {
               values: [
-                  [this.toExcelDate(Date.now()), timesMap.GENEZIO_JS, timesMap.AWS_JS, timesMap.AZURE_JS, timesMap.GENEZIO_PY, timesMap.AWS_PY, timesMap.GENEZIO_NEXTJS, timesMap.VERCEL, timesMap.NETLIFY, timesMap.GENEZIO_NETLIFY, timesMap.AWS_NETLIFY]
+                  [
+                    this.toExcelDate(Date.now()), 
+                    timesMap.GENEZIO_JS, 
+                    timesMap.GENEZIO_PY, 
+                    timesMap.AWS_JS, 
+                    timesMap.AWS_PY, 
+                    timesMap.AZURE_JS, 
+                    timesMap.AZURE_PY, 
+                    timesMap.GENEZIO_NEXTJS,
+                  ]
               ]
           }
       });

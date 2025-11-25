@@ -6,9 +6,9 @@ const test = async (lang) => {
   let host;
 
   if (lang == 'JS')
-    host = 'vazbq2drvs2sqeqykso4yaprme0lagcc.lambda-url.eu-central-1.on.aws';
+    host = 'zg3p7srvmkux5t3lpbdayywl7a0axvsr.lambda-url.eu-central-1.on.aws';
   else if (lang == 'PY')
-    host = 'hkb5yvsujlc3audtlnsqnw7m4i0bprbt.lambda-url.eu-central-1.on.aws';
+    host = 'gielmlgxwburtfz5mi3yzz56zq0bsnsa.lambda-url.eu-central-1.on.aws';
 
   const hostIp = (await lookup(host)).address;
   console.log("IP Calling " + host + " / " + hostIp);
