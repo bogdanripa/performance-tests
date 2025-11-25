@@ -5,11 +5,11 @@ backend:
     path: server
     functions:
         - name: coldStartTest
-          path: .
+          path: ../functions/
           entry: coldStartTest.mjs
           handler: handler
         - name: coldStartTestChild
-          path: .
+          path: ../functions/
           entry: coldStartTestChild.mjs
           handler: handler
     scripts:
