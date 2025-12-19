@@ -12,7 +12,7 @@ So the clild function is the one we measure. We measure its executin time from t
 
 You can find an example of a parent function in the server/coldStartTest.mjs file. This function measures the execution time of the child function, and returns the number of milliseconds it took the child function to execute.
 
-You can find an example of a child function in the server/coldStartTestChild.mjs file. You will see that it has the most basic response.
+You can find an example of a child function in the functions/coldStartTestChild.mjs file. You will see that it has the most basic response.
 
 Lastly, in the server/backend.ts file we add the test results to a google sheet.
 
