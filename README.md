@@ -4,7 +4,7 @@ This repo is the source for the performnce tests for FaaS systems running on Gen
 
 How it works:
 
-In the server/backend.ts file we have a function (run) that is called every hour at :13. The run function calls the measuring function (aka parent) on each enironment - once for cold starts and then 3 more times to measure warm starts.
+In the server/backend.ts file we have a function (run) that is called every day. The run function calls the measuring function (aka parent) on each enironment - once for cold starts and then 3 more times to measure warm starts.
 
 Each parent function runs in the same infrastructure / datacente as the child function (the one we meature).
 
